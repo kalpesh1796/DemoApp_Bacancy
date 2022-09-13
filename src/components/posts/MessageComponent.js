@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import { View, Text } from "react-native";
 
 const MessageComponent = (props) => {
@@ -35,4 +35,4 @@ const MessageComponent = (props) => {
   )
 };
 
-export default MessageComponent;
+export default memo(MessageComponent);

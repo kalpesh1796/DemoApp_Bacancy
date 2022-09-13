@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, memo, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   Pressable,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import MessageComponent from "./MessageComponent";
-import ReplayComponent from "./ReplayComponent";
 import OptionComponent from "../OptionComponent";
+import ReplayComponent from "./ReplayComponent";
 
 import { updatePostLikes } from "../../redux/actions/postActions";
 import { navigateTo } from "../../context/NavigationContext";
@@ -21,11 +21,16 @@ import styles from "./PostComponentStyles";
 const PostCard = (props) => {
   const numberOfReplies = 1;
   const { data = {} } = props;
-  const { id, message = "", user = {}, created_at = "", likes = 0, replies = [] } = data;
+  const { id, message = "", user = {}, created_at = "", likes = 0, liked_by = [], replies = [] } = data;
   const { avatar, full_name } = user;
+  const { user: currentUser = {} } = useSelector(state => state?.userReducer ?? {});
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(liked_by.length > 0 && liked_by.some(lb => lb?.id === currentUser?.id));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setIsLiked(liked_by.length > 0 && liked_by.some(lb => lb?.id === currentUser?.id));
+  }, [liked_by]);
 
   const onLikeDisLikePress = () => {
     const liked = !isLiked;
@@ -33,6 +38,7 @@ const PostCard = (props) => {
     dispatch(updatePostLikes({
       liked,
       postId: id,
+      currentUser,
       likes: newLikes < 1 ? 0 : newLikes,
     }));
     setIsLiked(liked);
@@ -45,10 +51,22 @@ const PostCard = (props) => {
     navigateTo("PostDetails", { postId: id });
   };
 
+  const handleReply = (data = {}) => {
+    navigateTo("PostDetails", { postId: id, addComment: true, ...data });
+  };
+
   const renderReplay = (item, ind) => {
     const isLastComment = ind === (comments.length - 1);
     return (
-      <ReplayComponent postId={id} key={item.id} data={item} index={ind} isLastComment={isLastComment} />
+      <ReplayComponent
+        postId={id}
+        data={item}
+        index={ind}
+        key={item.id}
+        showSubReplies={false}
+        onReplyPress={handleReply}
+        isLastComment={isLastComment}
+      />
     );
   };
 
@@ -90,7 +108,7 @@ const PostCard = (props) => {
             <Text style={styles.postactionBtnTxt}>{totalComments}</Text>
           </Pressable>
         </View>
-        <Pressable style={[styles.postactionBtn, { marginRight: 0 }]}>
+        <Pressable onPress={handleReply} style={[styles.postactionBtn, { marginRight: 0 }]}>
           <FontAwesome
             size={18}
             name={"reply"}
@@ -108,4 +126,4 @@ const PostCard = (props) => {
   );
 };
 
-export default PostCard;
+export default memo(PostCard);

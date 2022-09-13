@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import {
   Text,
   View,
   Alert,
   Image,
+  Keyboard,
   Pressable,
   TextInput,
   ScrollView,
@@ -21,29 +22,36 @@ import MessageComponent from "../../components/posts/MessageComponent";
 import ReplayComponent from "../../components/posts/ReplayComponent";
 import OptionComponent from "../../components/OptionComponent";
 
-import { updatePostLikes, addPostComment } from "../../redux/actions/postActions";
+import { updatePostLikes, addPostComment, addPostSubComment } from "../../redux/actions/postActions";
 import { goBack } from "../../context/NavigationContext";
 import { dateFormat } from "../../utils/helperFunctions";
 import styles from "./PostStyles.js";
 
 const Posts = ({ route }) => {
-  const { postId } = route?.params ?? {};
-  const { posts = [] } = useSelector(state => state.postReducer ?? {});
+  const { postId, addComment = false, replyId = undefined } = route?.params ?? {};
   const { bottom } = useSafeAreaInsets();
   const commentInputRef = useRef(null);
-
-  const [isLiked, setIsLiked] = useState(false);
-  const [fetching, setFetching] = useState(true);
-  const [comment, setComment] = useState("");
-
-  const postData = posts.find(p => p.id === postId) || {};
-
-  const { id, post_category = "", message = "", likes = 0, created_at = "", user = {}, replies = [] } = postData;
-  const { full_name = "", avatar = "" } = user;
-  const totalComments = replies?.length ?? 0;
-  const comments = [...replies];
-
   const dispatch = useDispatch();
+  const { posts = [] } = useSelector(state => state.postReducer ?? {});
+  const { user: currentUser = {} } = useSelector(state => state?.userReducer ?? {});
+  const postData = posts.find(p => p.id === postId) || {};
+  const {
+    id,
+    likes = 0,
+    user = {},
+    message = "",
+    replies = [],
+    liked_by = [],
+    created_at = "",
+    post_category = "",
+  } = postData;
+  const { full_name = "", avatar = "" } = user;
+  const totalReplies = replies?.length ?? 0;
+
+  const [comment, setComment] = useState("");
+  const [fetching, setFetching] = useState(true);
+  const [replyData, setReplyData] = useState(null);
+  const [isLiked, setIsLiked] = useState(liked_by.length > 0 && liked_by.some(lb => lb?.id === currentUser?.id));
 
   useEffect(() => {
     setTimeout(() => {
@@ -51,12 +59,24 @@ const Posts = ({ route }) => {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    if (!fetching && addComment && commentInputRef?.current) {
+      commentInputRef?.current.focus();
+      if (!!replyId) {
+        setReplyData({ postId, replyId });
+      } else {
+        setReplyData(null);
+      }
+    }
+  }, [fetching, addComment, commentInputRef?.current]);
+
   const onLikeDisLikePress = () => {
     const liked = !isLiked;
     const newLikes = liked ? likes + 1 : likes - 1;
     dispatch(updatePostLikes({
       liked,
       postId: id,
+      currentUser,
       likes: newLikes < 1 ? 0 : newLikes,
     }));
     setIsLiked(liked);
@@ -67,31 +87,39 @@ const Posts = ({ route }) => {
       Alert.alert("Empty Comment", "Please add some comment...");
       return false;
     }
+    Keyboard.dismiss();
     const commentData = {
       id: Math.floor(Math.random() * 100000),
-      user: {
-        id: 2,
-        avatar: "https://www.kindpng.com/picc/m/163-1636340_user-avatar-icon-avatar-transparent-user-icon-png.png",
-        full_name: "Jason Shrensky"
-      },
+      user: currentUser,
       message: comment,
       created_at: moment().format("MMM DD YYYY HH:mm:ss"),
       replies: [],
       likes: 0,
+      liked_by: [],
     };
-    dispatch(addPostComment({ postId: id, commentData }));
+    if (replyData !== null) {
+      dispatch(addPostSubComment({...replyData, commentData}));
+      setReplyData(null);
+    } else {
+      dispatch(addPostComment({ postId: id, commentData }));
+    }
     setComment("");
   };
 
   const renderReplay = (item, ind) => {
-    const isLastComment = (ind === (comments.length - 1));
+    const isLastComment = (ind === (replies.length - 1));
     return (
       <ReplayComponent
         postId={id}
         data={item}
         index={ind}
         key={item.id}
+        showSubReplies={true}
         isLastComment={isLastComment}
+        onReplyPress={(r) => {
+          commentInputRef?.current.focus();
+          setReplyData(r);
+        }}
       />
     );
   };
@@ -124,8 +152,14 @@ const Posts = ({ route }) => {
             <View style={styles.profileRightView}>
               <View style={styles.profileNameView}>
                 <Text style={styles.userFullName}>{full_name}</Text>
-                <FontAwesome size={18} style={{ marginHorizontal: 8 }} name={"caret-right"} color="#000" />
-                <Text style={styles.userFullName}>{post_category}</Text>
+                {
+                  post_category ? (
+                    <Fragment>
+                      <FontAwesome size={18} style={{ marginHorizontal: 8 }} name={"caret-right"} color="#000" />
+                      <Text style={styles.userFullName}>{post_category}</Text>
+                    </Fragment>
+                  ) : null
+                }
               </View>
               <Text style={styles.dateTimeTxt}>{dateFormat(created_at)}</Text>
             </View>
@@ -160,10 +194,16 @@ const Posts = ({ route }) => {
                   color={"#000"}
                   name={"comment-o"}
                 />
-                <Text style={styles.postactionBtnTxt}>{totalComments}</Text>
+                <Text style={styles.postactionBtnTxt}>{totalReplies}</Text>
               </Pressable>
             </View>
-            <Pressable onPress={() => commentInputRef?.current.focus()} style={[styles.postactionBtn, { marginRight: 0 }]}>
+            <Pressable
+              onPress={() => {
+                commentInputRef?.current.focus();
+                setReplyData(null);
+              }}
+              style={[styles.postactionBtn, { marginRight: 0 }]}
+            >
               <FontAwesome
                 size={18}
                 name={"reply"}
@@ -174,8 +214,8 @@ const Posts = ({ route }) => {
           </View>
           <View>
             {
-              totalComments > 0 ? (
-                comments.map(renderReplay)
+              totalReplies > 0 ? (
+                replies.map(renderReplay)
               ) : null
             }
           </View>
