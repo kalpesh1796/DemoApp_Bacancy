@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "created_at": "Jul 11 2022 12:30:00",
+    "message": "Just made my first #cryptocurrency investment! Time to par-tay",
+    "likes": 13,
+    "image_url": "",
+    "video_url": "",
+    "user": {
+      "id": 1,
+      "avatar": "https://www.pngitem.com/pimgs/m/294-2947257_interface-icons-user-avatar-profile-user-avatar-png.png",
+      "full_name": "Bonnie Villaseñor"
+    },
+    "replies": [
+      {
+        "id": 1,
+        "user": {
+          "id": 2,
+          "avatar": "https://www.kindpng.com/picc/m/163-1636340_user-avatar-icon-avatar-transparent-user-icon-png.png",
+          "full_name": "Jason Shrensky"
+        },
+        "message": "I Arlequin,\n\nI'm late to joining the group and didn't participate in the presentation. However, I reviewed, the Carbon Direct materials you  uploaded and am  interested in learning more / contributing to your diligence efforts. Please let me know the best path to participate.\nThnaks!",
+        "created_at": "Sep 12 2022 14:26:00",
+        "replies": [],
+        "likes": 12
+      },
+      {
+        "id": 2,
+        "user": {
+          "id": 3,
+          "avatar": "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg",
+          "full_name": "Frohman Anderson"
+        },
+        "message": "I Arlequin,\n\nI'm late to joining the group and didn't participate in the presentation. However, I reviewed, the Carbon Direct materials you  uploaded and am  interested in learning more / contributing to your diligence efforts. Please let me know the best path to participate.\nThnaks!",
+        "created_at": "Sep 12 2022 12:30:00",
+        "replies": [],
+        "likes": 2
+      }
+    ]
+  }
+]
