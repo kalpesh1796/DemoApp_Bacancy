@@ -5,17 +5,12 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
 import { useDispatch } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import MessageComponent from "./MessageComponent";
+import OptionComponent from "../OptionComponent";
 
 import { updatePostReplyLikes } from "../../redux/actions/postActions";
 import styles from "./PostComponentStyles";
@@ -49,15 +44,9 @@ const ReplayComponent = (props) => {
             <View style={{ flex: 1, marginBottom: 10 }}>
               <Text style={styles.userFullName}>{full_name}</Text>
             </View>
-            <Menu onSelect={(v) => alert(`You selected ${v} option`)}>
-              <MenuTrigger>
-                <MaterialIcons name="more-horiz" color={"#000"} size={18} />
-              </MenuTrigger>
-              <MenuOptions>
-                <MenuOption text="Edit" value={"edit"} />
-                <MenuOption text="Delete" value={"delete"} />
-              </MenuOptions>
-            </Menu>
+            <OptionComponent>
+              <MaterialIcons name="more-horiz" color={"#000"} size={18} />
+            </OptionComponent>
           </View>
           <MessageComponent message={message} />
           <View style={styles.replyActionContainer}>

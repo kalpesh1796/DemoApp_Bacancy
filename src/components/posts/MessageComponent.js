@@ -2,8 +2,7 @@ import React, { useCallback, useState } from "react";
 import { View, Text } from "react-native";
 
 const MessageComponent = (props) => {
-  const maxLines = 4;
-  const { message = "" } = props;
+  const { message = "", maxLines = 4 } = props;
   const [textShown, setTextShown] = useState(false);
   const [lengthMore, setLengthMore] = useState(false);
   const toggleNumberOfLines = () => {

@@ -6,6 +6,7 @@
     "likes": 13,
     "image_url": "",
     "video_url": "",
+    "post_category": "Crypto",
     "user": {
       "id": 1,
       "avatar": "https://www.pngitem.com/pimgs/m/294-2947257_interface-icons-user-avatar-profile-user-avatar-png.png",
@@ -21,7 +22,9 @@
         },
         "message": "I Arlequin,\n\nI'm late to joining the group and didn't participate in the presentation. However, I reviewed, the Carbon Direct materials you  uploaded and am  interested in learning more / contributing to your diligence efforts. Please let me know the best path to participate.\nThnaks!",
         "created_at": "Sep 12 2022 14:26:00",
-        "replies": [],
+        "replies": [
+          
+        ],
         "likes": 12
       },
       {

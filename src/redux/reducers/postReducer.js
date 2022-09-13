@@ -9,6 +9,10 @@ const initialState = {
 
 const postReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(types.ADD_POST_COMMENT, (state, action) => {
+      const postInd = state.posts.findIndex(p => p.id === action.payload.postId);
+      state.posts[postInd].replies = [action.payload.commentData, ...state.posts[postInd].replies];
+    })
     .addCase(types.UPDATE_POST, (state) => {
       state.posts = [];
     })

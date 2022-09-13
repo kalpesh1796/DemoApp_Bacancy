@@ -5,18 +5,13 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import {
-  Menu,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu';
 import { useDispatch } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import MessageComponent from "./MessageComponent";
 import ReplayComponent from "./ReplayComponent";
+import OptionComponent from "../OptionComponent";
 
 import { updatePostLikes } from "../../redux/actions/postActions";
 import { navigateTo } from "../../context/NavigationContext";
@@ -67,15 +62,9 @@ const PostCard = (props) => {
               <Text style={styles.userFullName}>{full_name}</Text>
               <Text style={styles.dateTimeTxt}>{dateFormat(created_at)}</Text>
             </View>
-            <Menu onSelect={(v) => alert(`You selected ${v} option`)}>
-              <MenuTrigger>
-                <MaterialIcons name="more-horiz" color={"#000"} size={18} />
-              </MenuTrigger>
-              <MenuOptions>
-                <MenuOption text="Edit" value={"edit"} />
-                <MenuOption text="Delete" value={"delete"} />
-              </MenuOptions>
-            </Menu>
+            <OptionComponent>
+              <MaterialIcons name="more-horiz" color={"#000"} size={18} />
+            </OptionComponent>
           </View>
           <Pressable onPress={goToDetails}>
             <MessageComponent message={message} />

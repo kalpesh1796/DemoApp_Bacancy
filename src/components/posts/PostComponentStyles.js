@@ -18,10 +18,9 @@ export default StyleSheet.create({
     }),
   },
   postContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
-    borderColor: "gray",
+    borderBottomColor: "gray",
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingBottom: 15,
     marginBottom: 15,
@@ -47,7 +46,7 @@ export default StyleSheet.create({
     marginTop: 5,
   },
   userFullName: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#000",
     fontWeight: "bold",
   },
